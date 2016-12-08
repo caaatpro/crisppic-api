@@ -1,6 +1,8 @@
 'use strict';
 const views = require('co-views');
 const parse = require('co-body');
+const mongoose = require('mongoose');
+
 const messages = [{
   id: 0,
   message: 'Koa next generation web framework for node.js'
@@ -15,20 +17,48 @@ const render = views(__dirname + '/../views', {
   }
 });
 
+module.exports.create = function *create() {
+  var People = mongoose.model('People');
+
+  // define some dummy data
+  let data = new People({
+      name: {
+        russian: 'Русское имя',
+        original: 'Английское имя'
+      },
+      sID: 0,
+      imdbID: '1'
+  });
+
+  var r = yield data.save();
+  this.body = r;
+};
 
 module.exports.list = function* list() {
-  this.body = yield messages;
+  var People = mongoose.model('People');
+
+  var r = yield People.find({}).limit(200);
+  this.body = r;
+};
+
+module.exports.list = function* list() {
+  var People = mongoose.model('People');
+
+  var r = yield People.find({}).limit(200);
+  this.body = r;
 };
 
 module.exports.fetch = function* fetch(id) {
-  const message = messages[id];
-  if (!message) {
-    this.throw(404, 'message with id = ' + id + ' was not found');
+  var People = mongoose.model('People');
+
+  var r = yield People.findOne({ 'sID':  id});
+
+  if (r !== null) {
+    this.body = r;
   }
-  this.body = yield message;
 };
 
-module.exports.create = function* create() {
+module.exports.create2 = function* create2() {
   const message = yield parse(this);
   const id = messages.push(message) - 1;
   message.id = id;

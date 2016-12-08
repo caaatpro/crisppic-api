@@ -24,11 +24,6 @@ var config = {
 config.mongodb = {
   uri: 'mongodb://127.0.0.1:27017/movies'
 };
-// var db = mongoose.createConnection(config.mongodb.uri);
-// db.on('error', console.error.bind(console, 'mongoose connection error: '));
-// db.once('open', function () {
-//   console.log('and... we have a data store');
-// });
 mongoose.Promise = global.Promise;
 mongoose.connect(config.mongodb.uri, function(err) {
   if (err) {
