@@ -1,6 +1,7 @@
 'use strict';
 const pages = require('./controllers/pages');
 const people = require('./controllers/people');
+const movie = require('./controllers/movie');
 const compress = require('koa-compress');
 const logger = require('koa-logger');
 const serve = require('koa-static');
@@ -16,6 +17,7 @@ const ObjectID = require('mongodb').ObjectID;
 
 require('./models/Index')();
 require('./models/People')();
+require('./models/Movie')();
 
 //setup mongoose
 var config = {
@@ -31,8 +33,6 @@ mongoose.connect(config.mongodb.uri, function(err) {
   }
 });
 
-
-
 // Logger
 app.use(logger());
 
@@ -41,6 +41,7 @@ app.use(route.get('/', pages.home));
 app.use(route.get('/people', people.list));
 app.use(route.get('/people/:id', people.fetch));
 app.use(route.post('/people', people.create));
+app.use(route.post('/movie', movie.create));
 
 // Serve static files
 app.use(serve(path.join(__dirname, 'public')));

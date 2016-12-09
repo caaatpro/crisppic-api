@@ -58,6 +58,24 @@ module.exports = function() {
       type: String,
       default: 'movie'
     },
+    version: {
+      type: String,
+      default: ''
+    },
+    suspended: {
+      type: String,
+      default: ''
+    },
+    episode: {
+      titles: [{
+        country: String,
+        title: String
+      }],
+      season: Number,
+      number: Number,
+      format: String,
+      year: Number
+    },
     MPAA: {
       type: String,
       default: ''
@@ -83,7 +101,6 @@ module.exports = function() {
 
             newI.save().exec()
               .then(function() {
-                console.log('Successful Completion!');
                 self.sID = 1;
                 next();
               }, function(err) {
@@ -100,7 +117,6 @@ module.exports = function() {
                 sID: self.sID
               }).exec()
               .then(function() {
-                console.log('Successful Completion!');
                 next();
               }, function(err) {
                 console.log('Fail Boat');
