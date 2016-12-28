@@ -11,8 +11,7 @@ const pages = require('./controllers/pages'),
       app = module.exports = koa(),
 
       mongoose = require('mongoose'),
-      ObjectID = require('mongodb').ObjectID,
-      autoIncrement = require('mongoose-auto-increment');
+      ObjectID = require('mongodb').ObjectID;
 
 require('./models/People')();
 require('./models/Genre')();
@@ -36,12 +35,12 @@ mongoose.connect(config.mongodb.uri, function(err) {
 // Logger
 app.use(logger());
 
-app.use(route.get('/', pages.home));
+app.use(route.all('/', pages.home));
 
 app.use(route.get('/people', people.list));
 app.use(route.get('/people/:id', people.fetch));
-app.use(route.post('/people', people.create));
-app.use(route.post('/movie', movie.create));
+// app.use(route.post('/people', people.create));
+// app.use(route.post('/movie', movie.create));
 app.use(route.get('/movie/kinopoisk/:id', movie.kinopoisk));
 
 // Serve static files

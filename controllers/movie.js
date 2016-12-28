@@ -22,9 +22,6 @@ function getMovie(options, limit) {
 
   return Movie.find(select).limit(limit)
     .then(function(r) {
-      console.log(1);
-      console.log(r);
-      console.log(2);
       return r;
     })
     .catch(function(err) {
@@ -137,10 +134,6 @@ module.exports.kinopoisk = function* kinopoisk(id) {
   var movie = yield getMovie({
     'kinopoiskID': kinopoiskID
   }, 1);
-
-  console.log(movie);
-
-  console.log(movie.length);
 
   if (movie.length === 0) {
     var parerRes = yield kp.getById(kinopoiskID, null);
