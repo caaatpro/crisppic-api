@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-var Index = mongoose.model('Index');
+const autoIncrement = require('mongoose-auto-increment');
 
 module.exports = function() {
   const People = new Schema({
@@ -51,56 +51,12 @@ module.exports = function() {
     }
   });
 
-  People.pre('save', function(next) {
-    var self = this;
-
-    if (self.isNew) {
-      // create a promise (get one from the query builder)
-      Index.findOne({
-          'name': 'People'
-        }).exec()
-        .then(function(r) {
-          console.log('Successful Completion!');
-
-          if (r === null) {
-            var newI = new Index({
-              name: 'People',
-              sID: 1
-            });
-
-            newI.save().exec()
-              .then(function() {
-                console.log('Successful Completion!');
-                self.sID = 1;
-                next();
-              }, function(err) {
-                console.log('Fail Boat');
-                return next(err);
-              });
-
-          } else {
-            self.sID = r.sID + 1;
-
-            Index.findOneAndUpdate({
-                name: 'People'
-              }, {
-                sID: self.sID
-              }).exec()
-              .then(function() {
-                console.log('Successful Completion!');
-                next();
-              }, function(err) {
-                console.log('Fail Boat');
-                return next(err);
-              });
-          }
-        }, function(err) {
-          console.log('Fail Boat');
-          return next(err);
-        });
-    } else {
-      next();
-    }
+  autoIncrement.initialize(mongoose);
+  People.plugin(autoIncrement.plugin, {
+    model: 'People',
+    field: 'sID',
+    startAt: 1,
+    incrementBy: 1
   });
 
   mongoose.model('People', People);

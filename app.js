@@ -1,22 +1,23 @@
 'use strict';
-const pages = require('./controllers/pages');
-const people = require('./controllers/people');
-const movie = require('./controllers/movie');
-const compress = require('koa-compress');
-const logger = require('koa-logger');
-const serve = require('koa-static');
-const route = require('koa-route');
-const koa = require('koa');
-const path = require('path');
-const app = module.exports = koa();
+const pages = require('./controllers/pages'),
+      people = require('./controllers/people'),
+      movie = require('./controllers/movie'),
+      compress = require('koa-compress'),
+      logger = require('koa-logger'),
+      serve = require('koa-static'),
+      route = require('koa-route'),
+      koa = require('koa'),
+      path = require('path'),
+      app = module.exports = koa(),
 
-const mongoose = require('mongoose');
-const ObjectID = require('mongodb').ObjectID;
+      mongoose = require('mongoose'),
+      ObjectID = require('mongodb').ObjectID,
+      autoIncrement = require('mongoose-auto-increment');
 
-require('./models/Index')();
 require('./models/People')();
-require('./models/Movie')();
 require('./models/Genre')();
+require('./models/Country')();
+require('./models/Movie')();
 
 //setup mongoose
 var config = {

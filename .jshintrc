@@ -18,5 +18,6 @@
   "trailing": true,
   "smarttabs": true,
   "white": true,
-  "-W116": true
+  "-W116": true,
+  "loopfunc": true
 }

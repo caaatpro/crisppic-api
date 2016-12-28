@@ -104,7 +104,7 @@ function _getMultiInfo($, fieldName) {
   return $('#infoTable td:contains("' + fieldName + '") ~ td').text().split(', ').map(function(item) {
     return item.replace(/\r\n|\n|\r|слова$|сборы$/gm, '').trim();
   }).filter(function(item) {
-    return item != '...' && item != '-';
+    return item != '...' && item != '-' && item != '';
   });
 }
 
@@ -177,6 +177,56 @@ function* getById(id, options) {
           }
         }
         if (options.type) result.type = _getType($);
+
+        result.peoples = [];
+
+        for (var i in result.director) {
+          result.peoples.push({
+            'people': result.director[i],
+            'role': '',
+            'category': 'director'
+          });
+        }
+
+        for (i in result.scenario) {
+          result.peoples.push({
+            'people': result.scenario[i],
+            'role': '',
+            'category': 'scenario'
+          });
+        }
+
+        for (i in result.producer) {
+          result.peoples.push({
+            'people': result.producer[i],
+            'role': '',
+            'category': 'producer'
+          });
+        }
+
+        for (i in result.composer) {
+          result.peoples.push({
+            'people': result.composer[i],
+            'role': '',
+            'category': 'composer'
+          });
+        }
+
+        for (i in result.cutting) {
+          result.peoples.push({
+            'people': result.cutting[i],
+            'role': '',
+            'category': 'cutting'
+          });
+        }
+
+        for (i in result.actors) {
+          result.peoples.push({
+            'people': result.actors[i],
+            'role': '',
+            'category': 'actors'
+          });
+        }
 
         return result;
       }

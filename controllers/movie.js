@@ -13,6 +13,7 @@ function getMovie(options, limit) {
     select.kinopoiskID = options.kinopoiskID;
   }
 
+
   if (!limit) {
     limit = 1;
   } else if (limit > 20) {
@@ -21,6 +22,9 @@ function getMovie(options, limit) {
 
   return Movie.find(select).limit(limit)
     .then(function(r) {
+      console.log(1);
+      console.log(r);
+      console.log(2);
       return r;
     })
     .catch(function(err) {
@@ -113,10 +117,7 @@ module.exports.create = function* create() {
     }
 
     if (r === null) {
-      return new Movie(data).save().then(function() {
-        // console.log('Good');
-      }, function(err) {
-        // console.log('Fail Boat');
+      return new Movie(data).save().then(function() {}, function(err) {
         console.log(err);
       });
     } else {
@@ -125,23 +126,24 @@ module.exports.create = function* create() {
   });
 };
 
-// module.exports.get = getMovie();
-
 module.exports.kinopoisk = function* kinopoisk(id) {
   var temp = id.match(/\d+/i);
   if (!temp) {
     return;
   }
 
-  const kinopoiskId = temp[0];
+  const kinopoiskID = temp[0];
 
-  var movie = getMovie({
-    'kinopoiskId': kinopoiskId
+  var movie = yield getMovie({
+    'kinopoiskID': kinopoiskID
   }, 1);
 
+  console.log(movie);
 
-  if (movie === null) {
-    var parerRes = yield kp.getById(kinopoiskId, null);
+  console.log(movie.length);
+
+  if (movie.length === 0) {
+    var parerRes = yield kp.getById(kinopoiskID, null);
 
     if (parerRes === null) {
       this.status = 404;
@@ -150,10 +152,9 @@ module.exports.kinopoisk = function* kinopoisk(id) {
 
     movie = parerRes;
 
+    // Genre
     var Genre = mongoose.model('Genre');
-    var total = parerRes.genre.length;
     var genreDB = [];
-
 
     var g = [];
     for (var i in parerRes.genre) {
@@ -162,7 +163,9 @@ module.exports.kinopoisk = function* kinopoisk(id) {
       });
     }
 
-    var genreSave = yield Genre.find({ $or: g })
+    var genreSave = yield Genre.find({
+        $or: g
+      })
       .then(result => {
         return result;
       })
@@ -172,12 +175,10 @@ module.exports.kinopoisk = function* kinopoisk(id) {
 
     genreDB = genreSave;
 
-    for (var i in genreDB) {
-      parerRes.genre.splice(parerRes.genre.indexOf(genreDB[i].title.russian), 1);
+    for (var j in genreDB) {
+      parerRes.genre.splice(parerRes.genre.indexOf(genreDB[j].title.russian), 1);
     }
     for (var ii in parerRes.genre) {
-      // console.log(parerRes.genre[ii]);
-
       var gg = yield new Genre({
           title: {
             russian: parerRes.genre[ii]
@@ -191,10 +192,108 @@ module.exports.kinopoisk = function* kinopoisk(id) {
     }
 
     var genreIds = [];
-    for (var id in genreDB) {
-      genreIds.push(genreDB[id]._id);
+    for (var k in genreDB) {
+      genreIds.push(genreDB[k]._id);
     }
 
+    // Country
+    var Country = mongoose.model('Country');
+    var countryDB = [];
+
+    var c = [];
+    for (var i2 in parerRes.country) {
+      c.push({
+        'name.russian': parerRes.country[i2]
+      });
+    }
+
+    var countrySave = yield Country.find({
+        $or: c
+      })
+      .then(result => {
+        return result;
+      })
+      .catch(function(err) {
+        console.log(err);
+      });
+
+    countryDB = countrySave;
+
+    for (var j2 in countryDB) {
+      parerRes.country.splice(parerRes.country.indexOf(countryDB[j2].name.russian), 1);
+    }
+    for (var ii2 in parerRes.country) {
+      var cc = yield new Country({
+          name: {
+            russian: parerRes.country[ii2]
+          }
+        }).save()
+        .then(result2 => {
+          return result2;
+        });
+
+      countryDB.push(cc);
+    }
+
+    var countryIds = [];
+    for (var k2 in countryDB) {
+      countryIds.push(countryDB[k2]._id);
+    }
+
+    // People
+    var People = mongoose.model('People');
+    var peopleDB = [];
+
+    var p = [];
+    var onlyName = [];
+    for (var i3 in parerRes.peoples) {
+      if (onlyName.indexOf(parerRes.peoples[i3].people) === -1) {
+        onlyName.push(parerRes.peoples[i3].people);
+
+        p.push({
+          'name.russian': parerRes.peoples[i3].people
+        });
+      }
+    }
+
+    var peopleSave = yield People.find({
+        $or: p
+      })
+      .then(result => {
+        return result;
+      })
+      .catch(function(err) {
+        console.log(err);
+      });
+
+    peopleDB = peopleSave;
+
+    for (var j3 in peopleDB) {
+      onlyName.splice(parerRes.peoples.indexOf(peopleDB[j3].name.russian), 1);
+    }
+
+    for (var ii3 in onlyName) {
+      var pp = yield new People({
+          name: {
+            russian: onlyName[ii3]
+          }
+        }).save()
+        .then(result2 => {
+          return result2;
+        });
+
+      peopleDB.push(pp);
+    }
+
+    for (var k3 in peopleDB) {
+      parerRes.peoples.filter(function(item) {
+        if (item.people === peopleDB[k3].name.russian) {
+          item.people = peopleDB[k3]._id;
+        }
+      });
+    }
+
+    // Movie
     var data = {
       titles: [{
         country: 'russian',
@@ -208,25 +307,10 @@ module.exports.kinopoisk = function* kinopoisk(id) {
         description: parerRes.description
       }],
       genre: genreIds,
-      country: [{
-        // type: mongoose.Schema.Types.ObjectId,
-        ref: 'Country'
-      }],
-      peoples: [{
-        people: {
-          // type: mongoose.Schema.Types.ObjectId,
-          ref: 'People'
-        },
-        role: '',
-        category: ''
-      }],
+      country: countryIds,
+      peoples: parerRes.peoples,
       runtime: parerRes.runtime,
       year: parerRes.year,
-      released: [{
-        country: String,
-        date: Date,
-        description: String
-      }],
       kinopoiskID: parerRes.id,
       rating: [{
         name: 'kinopoiskVotes',
@@ -238,60 +322,19 @@ module.exports.kinopoisk = function* kinopoisk(id) {
       type: parerRes.type
     };
 
-    this.body = data;
+    var Movie = mongoose.model('Movie');
+    movie = yield new Movie(data).save()
+      .then(function(body) {
+        return body;
+      }, function(err) {
+        console.log('Fail Boat');
+        console.log(err);
+        return;
+      });
 
-    // return new Movie(data).save().then(function(body) {
-    //   // console.log('Good');
-    //   this.body = data;
-    // }, function(err) {
-    //   // console.log('Fail Boat');
-    //   console.log(err);
-    // });
-
-
-
-    // var d = {
-    //
-    //   "actors": [
-    //     "Шон Пенн",
-    //     "Мишель Пфайффер",
-    //     "Дакота Фаннинг",
-    //     "Дайэнн Уист",
-    //     "Лоретта Дивайн",
-    //     "Ричард Шифф",
-    //     "Лора Дерн",
-    //     "Брэд Силверман",
-    //     "Джозеф Розенберг",
-    //     "Стэнли ДеСантис"
-    //   ],
-    //   "country": [
-    //     "США"
-    //   ],
-    //   "director": [
-    //     "Джесси Нельсон"
-    //   ],
-    //   "scenario": [
-    //     "Кристин Джонсон",
-    //     "Джесси Нельсон"
-    //   ],
-    //   "producer": [
-    //     "Маршалл Херсковиц",
-    //     "Джесси Нельсон",
-    //     "Ричард Соломон"
-    //   ],
-    //   "operator": [
-    //     "Эллиот Дэвис"
-    //   ],
-    //   "composer": [
-    //     "Джон Пауэлл"
-    //   ],
-    //   "cutting": [
-    //     "Ричард Чю"
-    //   ],
-    //   "genre": [
-    //     "драма"
-    //   ]
-    // };
+  } else {
+    movie = movie[0];
   }
 
+  this.body = movie;
 };

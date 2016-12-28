@@ -5,12 +5,14 @@ const Schema = mongoose.Schema;
 const autoIncrement = require('mongoose-auto-increment');
 
 module.exports = function() {
-  var Genre = new Schema({
+  var Country = new Schema({
     sID: {
       type: Number,
       default: 0
     },
-    title: {
+
+    iso_3166_1: String,
+    name: {
       russian: {
         type: String,
         default: ''
@@ -23,12 +25,12 @@ module.exports = function() {
   });
 
   autoIncrement.initialize(mongoose);
-  Genre.plugin(autoIncrement.plugin, {
-    model: 'Genre',
+  Country.plugin(autoIncrement.plugin, {
+    model: 'Country',
     field: 'sID',
     startAt: 1,
     incrementBy: 1
   });
 
-  mongoose.model('Genre', Genre);
+  mongoose.model('Country', Country);
 };
