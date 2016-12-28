@@ -1,9 +1,8 @@
 'use strict';
 
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
-const autoIncrement = require('mongoose-auto-increment');
+const mongoose = require('mongoose'),
+      Schema = mongoose.Schema,
+      autoIncrement = require('mongoose-auto-increment');
 
 module.exports = function() {
   const People = new Schema({

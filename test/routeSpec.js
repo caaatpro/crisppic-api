@@ -32,13 +32,13 @@ describe('Routes', () => {
   });
 
   // Get movie by kinopoisk ID not found
-  describe('GET /movie/kinopoisk/:id', () => {
-    it('should return 404', done => {
-      request
-        .get('/movie/kinopoisk/4')
-        .expect(404, done);
-    });
-  });
+  // describe('GET /movie/kinopoisk/:id', () => {
+  //   it('should return 404', done => {
+  //     request
+  //       .get('/movie/kinopoisk/5')
+  //       .expect(404, done);
+  //   });
+  // });
 
   // Get all people
   describe('GET /people', () => {
@@ -55,6 +55,69 @@ describe('Routes', () => {
       request
         .get('/people/61')
         .expect(200, done);
+    });
+  });
+
+  // User profile
+  describe('GET /user/:username', () => {
+    it('should return 200', done => {
+      request
+        .get('/user/caaatpro')
+        .expect(200, done);
+    });
+  });
+
+  // User movie
+  describe('GET /user/:username/movies', () => {
+    it('should return 200', done => {
+      request
+        .get('/user/caaatpro/movies')
+        .expect(200, done);
+    });
+  });
+
+  // User add movie
+  describe('put /user/movie/9', () => {
+    it('should return 200', done => {
+      request
+        .put('/user/movie/9')
+        .expect(200, done);
+    });
+  });
+
+  // User delete movie
+  describe('delete /user/movie/12', () => {
+    it('should return 200', done => {
+      request
+        .delete('/user/movie/12')
+        .expect(200, done);
+    });
+  });
+
+  // User actors
+  describe('GET /user/:username/actors', () => {
+    it('should return 200', done => {
+      request
+        .get('/user/caaatpro/actors')
+        .expect(200, done);
+    });
+  });
+
+  // User directors
+  describe('GET /user/:username/directors', () => {
+    it('should return 200', done => {
+      request
+        .get('/user/caaatpro/directors')
+        .expect(200, done);
+    });
+  });
+
+  // User not found
+  describe('GET /user/:username', () => {
+    it('should return 404', done => {
+      request
+        .get('/user/qwerty')
+        .expect(404, done);
     });
   });
 

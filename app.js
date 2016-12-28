@@ -2,6 +2,7 @@
 const pages = require('./controllers/pages'),
       people = require('./controllers/people'),
       movie = require('./controllers/movie'),
+      user = require('./controllers/user'),
       compress = require('koa-compress'),
       logger = require('koa-logger'),
       serve = require('koa-static'),
@@ -13,6 +14,8 @@ const pages = require('./controllers/pages'),
       mongoose = require('mongoose'),
       ObjectID = require('mongodb').ObjectID;
 
+require('./models/User')();
+require('./models/UserMovie')();
 require('./models/People')();
 require('./models/Genre')();
 require('./models/Country')();
@@ -42,6 +45,15 @@ app.use(route.get('/people/:id', people.fetch));
 // app.use(route.post('/people', people.create));
 // app.use(route.post('/movie', movie.create));
 app.use(route.get('/movie/kinopoisk/:id', movie.kinopoisk));
+
+// app.use(route.post('/user/create', user.create));
+app.use(route.get('/user/:username', user.profile));
+app.use(route.get('/user/:username/movies', user.movies));
+app.use(route.get('/user/:username/actors', user.actors));
+app.use(route.get('/user/:username/directors', user.directors));
+
+app.use(route.put('/user/movie/:id', user.addMovie));
+app.use(route.delete('/user/movie/:id', user.deleteMovie));
 
 // Serve static files
 app.use(serve(path.join(__dirname, 'public')));
