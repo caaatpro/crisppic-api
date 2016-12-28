@@ -10,14 +10,13 @@ const koa = require('koa');
 const path = require('path');
 const app = module.exports = koa();
 
-
 const mongoose = require('mongoose');
 const ObjectID = require('mongodb').ObjectID;
-
 
 require('./models/Index')();
 require('./models/People')();
 require('./models/Movie')();
+require('./models/Genre')();
 
 //setup mongoose
 var config = {
@@ -42,6 +41,7 @@ app.use(route.get('/people', people.list));
 app.use(route.get('/people/:id', people.fetch));
 app.use(route.post('/people', people.create));
 app.use(route.post('/movie', movie.create));
+app.use(route.get('/movie/kinopoisk/:id', movie.kinopoisk));
 
 // Serve static files
 app.use(serve(path.join(__dirname, 'public')));

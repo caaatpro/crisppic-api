@@ -7,7 +7,7 @@ var Index = mongoose.model('Index');
 
 module.exports = function() {
   const Movie = new Schema({
-    sID: Number,
+    sID: { type: Number, default: 0 },
     titles: [{
       country: String,
       title: String
@@ -43,17 +43,16 @@ module.exports = function() {
       date: Date,
       description: String
     }],
-    plot: String,
     imdbID: String,
     kinopoiskID: String,
     dateUpdate: {
       type: Date,
       default: Date.now
     },
-    rating: {
-      type: String,
-      default: ''
-    },
+    rating: [{
+      name: String,
+      value: String
+    }],
     type: {
       type: String,
       default: 'movie'
@@ -75,10 +74,6 @@ module.exports = function() {
       number: Number,
       format: String,
       year: Number
-    },
-    MPAA: {
-      type: String,
-      default: ''
     }
   });
 
