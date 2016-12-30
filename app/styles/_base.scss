@@ -1,0 +1,347 @@
+@import "reset";
+@import "variables";
+@import "mixins";
+@import "fonts"; // Common styles for every slide
+
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+body {
+  @include text(15px, #000000, PFBeauSansProLight);
+  letter-spacing: 0.3px;
+}
+
+a,
+button {
+  outline: none !important;
+}
+
+button {
+  border: none;
+  outline: none;
+  background: none;
+  border: none;
+  padding: 0;
+  outline-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+sub,
+sup {
+  font-size: 65%;
+  display: inline-block;
+}
+
+sup {
+  vertical-align: super;
+  margin-top: -10px;
+}
+
+sub {
+  vertical-align: sub;
+  margin-bottom: -10px;
+}
+
+ol {
+  list-style-position: inside;
+}
+
+.slide-wrap {
+  @include rel();
+  @include block(1024px, 768px);
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.sanofi-logo {
+  @include abs-point(726px, 885px);
+  @include block(113px, 23px);
+  @include bg-size( 'sanofi-logo.png');
+  z-index: 51;
+}
+
+#menu_block {
+  @include abs(auto, auto, 0, 0);
+  @include block(1024px, 67px);
+  @include bg-size( 'menu.png');
+  z-index: 50;
+  box-sizing: border-box;
+}
+
+.home,
+.info,
+.links {
+  position: absolute;
+  bottom: 10px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  transition: all 0.3s ease-out;
+}
+
+.info,
+.links {
+  @include block(33px, 33px);
+  bottom: 15px;
+}
+
+.links {
+  right: 180px;
+  @include bg-size( 'links.png', 100% 100%, 50% 50%);
+}
+
+.home {
+  left: 20px;
+  @include bg-size( 'home.png', 100% 100%, 50% 50%);
+  @include block(30px, 32px);
+}
+
+.info {
+  right: 230px;
+  @include bg-size( 'info.png', 100% 100%, 50% 50%);
+}
+
+.home:active,
+.info:active,
+.links:active {
+  background-size: 80% 80%;
+  transition: all 0.3s ease-out;
+}
+
+#menu {
+  @include abs(auto, auto, 11px, 86px);
+  padding: 0;
+  margin: 0;
+  @include text(15px, #ffffff, PFBeauSansProBbook);
+}
+
+.swiper-wrapper {
+  div {
+    float: left;
+    padding: 0;
+    margin: 0;
+
+    a {
+      display: block;
+      @include text(12px, #1d1d1b, PFBeauSansProBbook);
+      text-decoration: none;
+      margin: 0;
+      padding: 0 6px;
+      border-right: 1px solid #e41420;
+      cursor: pointer;
+      letter-spacing: 0.1px;
+
+      &.active {
+        color: #e41420;
+      }
+    }
+
+    &:last-child a {
+      border-right: none;
+    }
+  }
+}
+
+.popup {
+  @include block(100%, 100%);
+  @include abs-point(0, 0);
+  background: rgba(0,0,0,0.8);
+  z-index: -1;
+  transition: opacity 0.5s linear 0s, z-index 0.5s linear 0s;
+  opacity: 0;
+
+  &.active {
+    z-index: 5;
+    opacity: 1;
+  }
+
+  .close {
+    @include block(45px, 45px);
+    @include bg-size( 'close.png');
+    transition: all 0.2s ease-out;
+    transform: scale(1);
+
+    &:active {
+      transform: scale(0.8);
+    }
+  }
+
+  .popup-block {
+    @include abs(auto, 50px, 100px, auto);
+    @include block(390px, auto);
+    border-radius: 10px;
+    padding: 50px 0 20px 32px;
+    box-sizing: border-box;
+    background: #ffffff;
+
+    &:after {
+      content: '';
+      @include block(39px, 38px);
+      @include abs(auto, 128px, -28px, auto);
+      @include bg-size( 'popup-arrow.png');
+    }
+
+    .close {
+      @include abs-point(-14px, 50%);
+      margin-left: -22px;
+    }
+
+    h3 {
+      @include text(24px, #ed3424, PFBeauSansProSemiBold);
+      text-transform: uppercase;
+      padding-bottom: 15px;
+    }
+
+    p {
+      @include text(18px, #1d1d1b, PFBeauSansProThin);
+      padding-bottom: 20px;
+      line-height: 20px;
+    }
+  }
+
+  &.popup-design {
+    .popup-block {
+      @include abs(auto, 62px, 50%, auto);
+      @include block(900px, auto);
+      border-radius: 10px;
+      padding: 50px 0 20px 32px;
+      box-sizing: border-box;
+      background: #ffffff;
+      transform: translateY(50%);
+
+      p {
+        @include text(18px, #000000, PFBeauSansProLight);
+        padding-bottom: 20px;
+        line-height: 20px;
+
+        span {
+          font-family: PFBeauSansProBlack;
+          color: #ed3424;
+        }
+      }
+
+      &:after {
+        display: none;
+      }
+
+      .close {
+        @include abs(auto, -16px, 50%, auto) margin: 0;
+        transform: scale(1) translateY(50%);
+
+        &:active {
+          transform: scale(0.8) translateY(50%);
+        }
+      }
+    }
+  }
+}
+
+.swiper-container {
+  position: absolute;
+  left: 80px;
+  bottom: 45px;
+  width: 660px;
+  overflow: hidden;
+}
+
+.swiper-wrapper {
+  z-index: 1;
+  display: flex;
+  transition-property: transform;
+  box-sizing: content-box;
+}
+
+.swiper-wrapper {
+  transform: translate3d(0,0,0);
+}
+
+.swiper-slide {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.logo {
+  z-index: 999;
+  @include bg-size( 'logo.png');
+  @include abs-point(44px, 0);
+  @include block(245px, 57px);
+}
+
+// amim
+.#{$slide} {
+  .anim-opacity {
+    opacity: 0;
+    transition: opacity 0.5s linear 0.5s;
+  }
+
+  .anim0 {
+    transition-delay: 0.5s;
+  }
+
+  .anim1 {
+    transition-delay: 1s;
+  }
+
+  .anim2 {
+    transition-delay: 1.5s;
+  }
+
+  .anim3 {
+    transition-delay: 2s;
+  }
+
+  .anim4 {
+    transition-delay: 2.5s;
+  }
+
+  .anim5 {
+    transition-delay: 3s;
+  }
+
+  .anim6 {
+    transition-delay: 3.5s;
+  }
+
+  .anim7 {
+    transition-delay: 4s;
+  }
+
+  .anim8 {
+    transition-delay: 4.5s;
+  }
+
+  .anim9 {
+    transition-delay: 5s;
+  }
+
+  .anim10 {
+    transition-delay: 5.5s;
+  }
+  // inital state
+  &.slide-active {
+    .anim-opacity {
+      opacity: 1;
+    }
+  }
+}
+// semi-transparent screenshot (usually from PSD)
+
+.screenshot {
+  @include block(1024px, 768px);
+  @include abs-point(0, 0);
+  @include bg-size( '../screenshots/' + $slide + '.jpg');
+  opacity: 0.3;
+  z-index: 1;
+  pointer-events: none;
+}

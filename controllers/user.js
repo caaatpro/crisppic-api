@@ -31,7 +31,7 @@ module.exports.movies = function* movies(username) {
   var UserMovie = mongoose.model('UserMovie');
   var movie = yield UserMovie.find({
     'userId': profile._id
-  }).limit(20).populate('movieId', 'movie');
+  }).limit(20).populate('movieId');
 
   this.body = movie;
   yield {};
@@ -105,12 +105,33 @@ module.exports.deleteMovie = function* deleteMovie(id) {
   yield {};
 };
 
-module.exports.directors = function* directors() {
+module.exports.directors = function* directors(username) {
+  var profile = yield getProfile(username);
+  if (profile === null) {
+    this.status = 404;
+    return;
+  }
+
+  // var UserMovie = mongoose.model('UserMovie');
+  // var movie = yield UserMovie.find({
+  //   'userId': profile._id
+  // }, 'movieId').limit(20).populate('movieId').populate('movieId.peoples');
+  //
+  // console.log(movie[0].movieId.peoples);
+  //
+  // var directors = [];
+
   this.body = 'User directors';
   yield {};
 };
 
-module.exports.actors = function* actors() {
+module.exports.actors = function* actors(username) {
+  var profile = yield getProfile(username);
+  if (profile === null) {
+    this.status = 404;
+    return;
+  }
+
   this.body = 'User actors';
   yield {};
 };
