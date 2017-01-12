@@ -1,7 +1,8 @@
 'use strict';
 
 const mongoose = require('mongoose'),
-  Schema = mongoose.Schema;
+  Schema = mongoose.Schema,
+  bcrypt = require('bcrypt');
 
 module.exports = function() {
   var User = new Schema({
@@ -55,6 +56,17 @@ module.exports = function() {
       }
     }
   });
+
+  User.methods.generateHash = function(password) {
+    console.log(password);
+    console.log(bcrypt.genSaltSync(8));
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+  };
+
+  // checking if password is valid
+  User.methods.validPassword = function(password) {
+    return bcrypt.compareSync(password, this.password);
+  };
 
   mongoose.model('User', User);
 };

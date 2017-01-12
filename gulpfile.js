@@ -10,7 +10,6 @@ var gulp = require('gulp'),
 
 gulp.task('sass', function () {
   'use strict';
-  var destFolder = 'app/css';
   return gulp.src('app/styles/*.scss')
     // for some reason it doesn't work. investigate later
     //.pipe(changed(destFolder), {extension:'.css'})
@@ -18,54 +17,55 @@ gulp.task('sass', function () {
     .pipe(autoprefixer({
       browsers:['> 1%', 'last 2 versions']
     }))
-    .pipe(gulp.dest(destFolder));
+    .pipe(gulp.dest('public/css/'));
 });
 
 gulp.task('js', function () {
   'use strict';
   return gulp.src('app/scripts/*.js')
     .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'));
+    .pipe(jshint.reporter('jshint-stylish'))
+    .pipe(gulp.dest('public/scripts/'));
 });
 
 gulp.task('fileinclude', function () {
   'use strict';
-  return gulp.src(['app/html/*.html', '!app/include/*.html', '!app/index.html'])
+  return gulp.src(['app/*.html', '!app/include/*.html'])
     .pipe(fileinclude({
       prefix: '@@',
-      basepath: 'app/html/include/'
+      basepath: 'app/include/'
     }))
-    .pipe(gulp.dest('app/'));
+    .pipe(gulp.dest('public/'));
 });
 
 gulp.task('watch', function () {
   'use strict';
   gulp.watch('app/styles/*.scss', ['sass']);
-  gulp.watch('app/html/**/*.html', ['fileinclude']);
+  gulp.watch('app/**/*.html', ['fileinclude']);
   gulp.watch('app/scripts/*.js', ['js']);
   gulp.watch('app/images/**/*.*', ['images']);
 });
 
 gulp.task('serve', function(callback) {
   'use strict';
-  runSequence(['fileinclude', 'sass', 'images', 'fonts', 'watch'],
+  runSequence(['clean', 'fileinclude', 'sass', 'images', 'fonts', 'watch'],
     callback
   );
 });
 
 gulp.task('clean', function (callback) {
   'use strict';
-  del(['dist/**/*'], callback);
+  del(['public/**/*'], callback);
 });
 
 gulp.task('fonts', function () {
   'use strict';
   return gulp.src('app/fonts/**/*')
-    .pipe(gulp.dest('dist/fonts'));
+    .pipe(gulp.dest('public/fonts/'));
 });
 
 gulp.task('images', function () {
   'use strict';
   return gulp.src('app/images/**/*')
-    .pipe(gulp.dest('dist/images'));
+    .pipe(gulp.dest('public/images/'));
 });
