@@ -25,13 +25,10 @@
     "koa-static": "^2.0.0",
     "mongodb": "^2.2.12",
     "mongoose": "^4.7.1",
-<<<<<<< HEAD
     "passport-facebook": "^2.1.1",
     "passport-google-auth": "^1.0.1",
     "passport-local": "^1.0.0",
-=======
     "mongoose-auto-increment": "^5.0.1",
->>>>>>> 7328a06ccd13d0f8f4c1816efaba4647f4e5a751
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
     "swig": "^1.3.2"
