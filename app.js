@@ -5,17 +5,13 @@ const pages = require('./controllers/pages'),
   user = require('./controllers/user'),
   compress = require('koa-compress'),
   logger = require('koa-logger'),
-  serve = require('koa-static'),
   route = require('koa-route'),
   Koa = require('koa'),
-  path = require('path'),
   app = module.exports = new Koa(),
-  CSRF = require('koa-csrf').default,
   fs = require('fs'),
   bodyParser = require('koa-bodyparser'),
 
   mongoose = require('mongoose'),
-  ObjectID = require('mongodb').ObjectID,
 
   // sessions
   convert = require('koa-convert'),
@@ -63,14 +59,6 @@ app.use(convert(session({
 
 app.use(bodyParser());
 
-// csrf
-// app.use(new CSRF({
-//   invalidSessionSecretMessage: 'Invalid session secret',
-//   invalidSessionSecretStatusCode: 403,
-//   invalidTokenMessage: 'Invalid CSRF token',
-//   invalidTokenStatusCode: 403
-// }));
-
 // authentication
 require('./controllers/auth');
 app.use(passport.initialize());
@@ -78,65 +66,6 @@ app.use(passport.session());
 
 // Logger
 app.use(convert(logger()));
-
-app.isAuthenticated = function(ctx, returnCode = false) {
-  if (ctx.isAuthenticated()) {
-    console.log(ctx.user);
-    return true;
-  } else {
-    if (returnCode) {
-      ctx.status = 401;
-      ctx.body = {
-        success: false
-      };
-    }
-    return false;
-  }
-};
-
-// Login
-app.use(route.get('/signin', function(ctx) {
-  if (!app.isAuthenticated(ctx)) {
-    ctx.type = 'html';
-    ctx.body = fs.readFileSync('public/signin.html', 'utf8');
-  } else {
-    ctx.redirect('/');
-  }
-}));
-
-app.use(route.post('/login',
-  function(ctx, next) {
-  return passport.authenticate('local', function (err, user) {
-      if (user === false) {
-        ctx.body = {
-          success: false
-        };
-        ctx.status = 401;
-      } else {
-        ctx.body = {
-          success: true
-        };
-      }
-    })(ctx, next);
-  }
-));
-
-app.use(route.post('/login2',
-  function(ctx, next) {
-  return passport.authenticate('jsx', function (err, user) {
-      if (user === false) {
-        ctx.body = {
-          success: false
-        };
-        ctx.status = 401;
-      } else {
-        ctx.body = {
-          success: true
-        };
-      }
-    })(ctx, next);
-  }
-));
 
 // Registration
 app.use(route.get('/signup', function(ctx) {
@@ -154,11 +83,28 @@ app.use(route.post('/signup',
   })
 ));
 
-app.use(route.post('/profile', passport.authenticate('jwt', { session: false}),
-    function(ctx) {
-        ctx.body = ctx.user.profile;
+// Middleware authentication
+app.use(function(ctx, next) {
+  return passport.authenticate('basic', {
+    session: false
+  }, function(err, user) {
+    if (user === false) {
+      ctx.body = {
+        success: false
+      };
+      ctx.status = 401;
+    } else {
+      return next();
     }
-));
+  })(ctx, next);
+});
+
+// Login
+app.use(route.get('/login', function(ctx) {
+  ctx.body = {
+    success: true
+  };
+}));
 
 // Logout
 app.use(route.get('/logout', function(ctx) {
@@ -170,10 +116,8 @@ app.use(route.get('/logout', function(ctx) {
 
 // Serve static files
 app.use(route.all('/', function(ctx) {
-  if (app.isAuthenticated(ctx, true)) {
-    ctx.type = 'html';
-    ctx.body = fs.createReadStream('public/app.html');
-  }
+  ctx.type = 'html';
+  ctx.body = fs.createReadStream('public/app.html');
 }));
 
 
