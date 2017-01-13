@@ -16,7 +16,7 @@ User.findOne({
   }
 });
 
-  var user = { id: 1, username: 'test', password: 'test' };
+var user = { id: 1, username: 'test', password: 'test' };
 
 
 passport.serializeUser(function(user, done) {
@@ -79,33 +79,3 @@ passport.use('local-signup', new LocalStrategy({
     });
   })
 );
-
-const FacebookStrategy = require('passport-facebook').Strategy;
-passport.use(new FacebookStrategy({
-    clientID: 'your-client-id',
-    clientSecret: 'your-secret',
-    callbackURL: 'http://localhost:' + (process.env.PORT || 3000) + '/auth/facebook/callback'
-  },
-  function(token, tokenSecret, profile, done) {
-    'use strict';
-    // retrieve user
-    User.findOne({
-      facebook: profile.id
-    }, done);
-  }
-));
-
-const GoogleStrategy = require('passport-google-auth').Strategy;
-passport.use(new GoogleStrategy({
-    clientId: 'your-client-id',
-    clientSecret: 'your-secret',
-    callbackURL: 'http://localhost:' + (process.env.PORT || 3000) + '/auth/google/callback'
-  },
-  function(token, tokenSecret, profile, done) {
-    'use strict';
-    // retrieve user
-    User.findOne({
-      google: profile.id
-    }, done);
-  }
-));

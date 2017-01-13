@@ -105,11 +105,38 @@ app.use(route.get('/signin', function(ctx) {
 }));
 
 app.use(route.post('/login',
-  passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/'
-  })
-))
+  function(ctx, next) {
+  return passport.authenticate('local', function (err, user) {
+      if (user === false) {
+        ctx.body = {
+          success: false
+        };
+        ctx.status = 401;
+      } else {
+        ctx.body = {
+          success: true
+        };
+      }
+    })(ctx, next);
+  }
+));
+
+app.use(route.post('/login2',
+  function(ctx, next) {
+  return passport.authenticate('jsx', function (err, user) {
+      if (user === false) {
+        ctx.body = {
+          success: false
+        };
+        ctx.status = 401;
+      } else {
+        ctx.body = {
+          success: true
+        };
+      }
+    })(ctx, next);
+  }
+));
 
 // Registration
 app.use(route.get('/signup', function(ctx) {
