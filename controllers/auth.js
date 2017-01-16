@@ -24,10 +24,13 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(id, done) {
   'use strict';
   User.findById(id, function(err,user){
+    console.log(err);
+    console.log(user);
     if (err) {
       return done(err);
     } else {
       done(null,user);
+      console.log(user);
     }
   });
 });

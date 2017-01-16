@@ -15,8 +15,6 @@ const pages = require('./controllers/pages'),
 
   // sessions
   convert = require('koa-convert'),
-  session = require('koa-generic-session'),
-  MongoStore = require('koa-generic-session-mongo'),
 
   passport = require('koa-passport');
 
@@ -47,22 +45,11 @@ mongoose.connect(config.mongodb.uri, function(err) {
   }
 });
 
-// sessions
-app.keys = ['a', 'b'];
-app.use(convert(session({
-  store: new MongoStore({
-    host: config.db.host,
-    post: config.db.post,
-    db: 'sessions'
-  })
-})));
-
 app.use(bodyParser());
 
 // authentication
 require('./controllers/auth');
 app.use(passport.initialize());
-app.use(passport.session());
 
 // Logger
 app.use(convert(logger()));
@@ -120,7 +107,7 @@ app.use(route.all('/', function(ctx) {
   ctx.body = fs.createReadStream('public/app.html');
 }));
 
-
+app.use(route.get('/profile', convert(user.profile)));
 app.use(route.get('/people', convert(people.list)));
 app.use(route.get('/people/:id', convert(people.fetch)));
 // app.use(route.post('/people', people.create));
@@ -128,7 +115,8 @@ app.use(route.get('/people/:id', convert(people.fetch)));
 app.use(route.get('/movie/kinopoisk/:id', convert(movie.kinopoisk)));
 
 // app.use(route.post('/user/create', user.create));
-app.use(route.get('/user/:username', convert(user.profile)));
+app.use(route.get('/user/profile', convert(user.profile)));
+app.use(route.get('/user/:username', convert(user.profileByName)));
 app.use(route.get('/user/:username/movies', convert(user.movies)));
 app.use(route.get('/user/:username/actors', convert(user.actors)));
 app.use(route.get('/user/:username/directors', convert(user.directors)));

@@ -7,15 +7,23 @@ function getProfile(username) {
 
   return User.findOne({
     'username': username
-  });
+  }, 'username');
 }
 
-module.exports.profile = function* profile(username) {
+module.exports.profile = function* profile() {
+  var profile = yield getProfile('test');
+
+  this.body = profile;
+  yield {};
+};
+
+module.exports.profileByName = function* profile(username) {
   var profile = yield getProfile(username);
   if (profile === null) {
     this.status = 404;
     return;
   }
+
 
   this.body = profile;
   yield {};
