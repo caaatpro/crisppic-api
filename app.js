@@ -11,6 +11,8 @@ const pages = require('./controllers/pages'),
   fs = require('fs'),
   bodyParser = require('koa-bodyparser'),
 
+  router = require('koa-router')(),
+
   mongoose = require('mongoose'),
 
   // sessions
@@ -81,10 +83,16 @@ app.use(function(ctx, next) {
       };
       ctx.status = 401;
     } else {
+      ctx.user = user;
+      console.log(user);
       return next();
     }
   })(ctx, next);
 });
+
+app
+  .use(router.routes())
+  .use(router.allowedMethods());
 
 // Login
 app.use(route.get('/login', function(ctx) {
@@ -107,7 +115,23 @@ app.use(route.all('/', function(ctx) {
   ctx.body = fs.createReadStream('public/app.html');
 }));
 
-app.use(route.get('/profile', convert(user.profile)));
+
+// search movie
+//
+router.get('/user/profile', convert(user.profile));
+router.get('/user/:username', convert(user.profileByName));
+router.get('/users', convert(user.users));
+
+router.get('/user/profile/movies', convert(user.movies));
+router.get('/user/:username/movies', convert(user.movies));
+
+router.put('/user/movie/:id', convert(user.addMovie));
+router.delete('/user/movie/:id', convert(user.deleteMovie));
+
+
+router.get('/user/profile', convert(user.profile));
+
+
 app.use(route.get('/people', convert(people.list)));
 app.use(route.get('/people/:id', convert(people.fetch)));
 // app.use(route.post('/people', people.create));
@@ -115,14 +139,7 @@ app.use(route.get('/people/:id', convert(people.fetch)));
 app.use(route.get('/movie/kinopoisk/:id', convert(movie.kinopoisk)));
 
 // app.use(route.post('/user/create', user.create));
-app.use(route.get('/user/profile', convert(user.profile)));
-app.use(route.get('/user/:username', convert(user.profileByName)));
-app.use(route.get('/user/:username/movies', convert(user.movies)));
-app.use(route.get('/user/:username/actors', convert(user.actors)));
-app.use(route.get('/user/:username/directors', convert(user.directors)));
 
-app.use(route.put('/user/movie/:id', convert(user.addMovie)));
-app.use(route.delete('/user/movie/:id', convert(user.deleteMovie)));
 
 // Compress
 app.use(convert(compress()));

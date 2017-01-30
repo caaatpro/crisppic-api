@@ -22,6 +22,7 @@
     "koa-logger": "^1.2.0",
     "koa-passport": "3.0.0-rc.1",
     "koa-route": "^3.0",
+    "koa-router": "^7.1.0",
     "koa-static": "^2.0.0",
     "mongodb": "^2.2.12",
     "mongoose": "^4.7.1",
