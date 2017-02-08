@@ -30,6 +30,16 @@ function getMovie(options, limit) {
 }
 
 
+module.exports.list = function* list() {
+  var Movie = mongoose.model('Movie');
+
+  var r = yield Movie.find({})
+    .populate('country')
+    .populate('genre')
+    .limit(200);
+  this.body = r;
+};
+
 module.exports.create = function* create() {
   var Movie = mongoose.model('Movie');
   var req = yield parse(this);
