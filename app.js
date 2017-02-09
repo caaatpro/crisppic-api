@@ -15,7 +15,6 @@ const pages = require('./controllers/pages'),
 
   mongoose = require('mongoose'),
 
-  // sessions
   convert = require('koa-convert'),
 
   passport = require('koa-passport');
@@ -30,11 +29,9 @@ require('./models/Movie')();
 //setup mongoose
 var config = {
   db: {
-    host: '127.0.0.1',
-    post: '27017',
-    movies: 'movies',
-    sessions: 'sessions',
-
+    host: '85.143.213.70',
+    post: '27272',
+    movies: 'movies'
   }
 };
 config.mongodb = {
