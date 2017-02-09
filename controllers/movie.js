@@ -33,11 +33,29 @@ function getMovie(options, limit) {
 module.exports.list = function* list() {
   var Movie = mongoose.model('Movie');
 
-  var r = yield Movie.find({})
+  var r = yield Movie.find({}, 'year type poster titles country genre')
     .populate('country')
     .populate('genre')
     .limit(200);
-  this.body = r;
+
+  var movies = [];
+
+  for (var i = 0; i < r.length; i++) {
+    var titles = {};
+    for (var j = 0; j < r[i].titles.length; j++) {
+      titles[r[i].titles[j].country] = r[i].titles[j].title;
+    }
+    movies.push({
+      'titles': titles,
+      'year': r[i].year,
+      'type': r[i].type,
+      'poster': r[i].poster,
+      'country': r[i].country,
+      'genre': r[i].genre
+    });
+  }
+
+  this.body = movies;
 };
 
 module.exports.create = function* create() {
@@ -133,9 +151,10 @@ module.exports.create = function* create() {
   });
 };
 
-module.exports.kinopoisk = function* kinopoisk(id) {
-  var temp = id.match(/\d+/i);
+module.exports.kinopoisk = function* kinopoisk() {
+  var temp = this.params.id.match(/\d+/i);
   if (!temp) {
+    this.status = 404;
     return;
   }
 
@@ -339,5 +358,20 @@ module.exports.kinopoisk = function* kinopoisk(id) {
     movie = movie[0];
   }
 
-  this.body = movie;
+
+  var titles = {};
+  console.log(movie.titles);
+  for (var x = 0; x < movie.titles.length; x++) {
+    titles[movie.titles[x].country] = movie.titles[x].title;
+  }
+  var movieInfo = {
+    'titles': titles,
+    'year': movie.year,
+    'type': movie.type,
+    'poster': movie.poster,
+    'country': movie.country,
+    'genre': movie.genre
+  };
+
+  this.body = movieInfo;
 };

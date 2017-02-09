@@ -116,7 +116,7 @@ app.use(route.all('/', function(ctx) {
 }));
 
 
-// user
+// User
 router.get('/user/profile', convert(user.profile));
 router.get('/user/:username', convert(user.profileByName));
 router.get('/users', convert(user.users));
@@ -127,16 +127,17 @@ router.get('/user/:username/movies', convert(user.movies));
 router.put('/user/movie/:id', convert(user.addMovie));
 router.delete('/user/movie/:id', convert(user.deleteMovie));
 
-// movies
-app.use(route.get('/movies', convert(movie.list)));
+// Movies
+router.get('/movies', convert(movie.list));
 
+// Parser
+router.get('/movie/kinopoisk/:id', convert(movie.kinopoisk));
 
 app.use(route.get('/people', convert(people.list)));
 
 app.use(route.get('/people/:id', convert(people.fetch)));
 // app.use(route.post('/people', people.create));
 // app.use(route.post('/movie', movie.create));
-app.use(route.get('/movie/kinopoisk/:id', convert(movie.kinopoisk)));
 
 // app.use(route.post('/user/create', user.create));
 
