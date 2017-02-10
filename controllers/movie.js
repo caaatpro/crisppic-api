@@ -1,7 +1,7 @@
 'use strict';
 const parse = require('co-body'),
-mongoose = require('mongoose'),
-kp = require('../parser/kinopoisk.js');
+  mongoose = require('mongoose'),
+  kp = require('../parser/kinopoisk.js');
 
 function getMovie(options, limit) {
   var Movie = mongoose.model('Movie');
@@ -237,7 +237,10 @@ module.exports.kinopoisk = function* kinopoisk(u) {
     genreDB = genreSave;
 
     for (var j in genreDB) {
-      parerRes.genre.splice(parerRes.genre.indexOf(genreDB[j].title.russian), 1);
+      var gid = parerRes.genre.indexOf(genreDB[j].title.russian);
+      if (gid != -1) {
+        parerRes.genre.splice(gid, 1);
+      }
     }
     for (var ii in parerRes.genre) {
       var gg = yield new Genre({
@@ -281,7 +284,10 @@ module.exports.kinopoisk = function* kinopoisk(u) {
     countryDB = countrySave;
 
     for (var j2 in countryDB) {
-      parerRes.country.splice(parerRes.country.indexOf(countryDB[j2].name.russian), 1);
+      var cid = parerRes.country.indexOf(countryDB[j2].name.russian);
+      if (cid != -1) {
+        parerRes.country.splice(cid, 1);
+      }
     }
     for (var ii2 in parerRes.country) {
       var cc = yield new Country({
@@ -330,7 +336,10 @@ module.exports.kinopoisk = function* kinopoisk(u) {
     peopleDB = peopleSave;
 
     for (var j3 in peopleDB) {
-      onlyName.splice(parerRes.peoples.indexOf(peopleDB[j3].name.russian), 1);
+      var pid = onlyName.indexOf(peopleDB[j3].name.russian);
+      if (pid != -1) {
+        onlyName.splice(pid, 1);
+      }
     }
 
     for (var ii3 in onlyName) {
@@ -353,6 +362,8 @@ module.exports.kinopoisk = function* kinopoisk(u) {
         }
       });
     }
+
+    // console.log(parerRes.peoples);
 
     // Movie
     var data = {
