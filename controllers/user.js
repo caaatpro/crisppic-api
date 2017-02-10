@@ -1,7 +1,8 @@
 'use strict';
 
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'),
       // ObjectId = require('mongodb').ObjectID;
+      movie = require('./movie');
 
 function getProfile(username) {
   var User = mongoose.model('User');
@@ -10,6 +11,8 @@ function getProfile(username) {
     'username': username
   }, 'username');
 }
+
+// var self = module.exports;
 
 // Profile
 module.exports.profile = function* profile() {
@@ -57,18 +60,25 @@ module.exports.movies = function* movies() {
 
   var UserMovie = mongoose.model('UserMovie');
   var movies = yield UserMovie.find({
-    'userId': profile._id
-  }).limit(20).populate('movieId');
+    'user': profile._id
+  }).limit(20).populate('movie');
 
   console.log(movies);
 
   var userMovies = [];
   for (var id in movies) {
     if (movies.hasOwnProperty(id)) {
+      console.log(movies[id].titles);
+      var titles = {};
+      for (var x = 0; x < movies[id].movie.titles.length; x++) {
+        titles[movies[id].movie.titles[x].country] = movies[id].movie.titles[x].title;
+      }
+
       userMovies.push({
+        'titles': titles,
         'sID': movies[id].sID,
-        'year': movies[id].movieId.year,
-        'type': movies[id].movieId.type,
+        'year': movies[id].movie.year,
+        'type': movies[id].movie.type,
         'view': movies[id].view,
         'date': movies[id].date
       });
@@ -79,7 +89,23 @@ module.exports.movies = function* movies() {
   yield {};
 };
 
+
 // add user movie
+module.exports.addMovieKinopoisk = function* addMovieKinopoisk() {
+  movie.params = this.params;
+  module.exports.user = this.user;
+  module.exports.params = this.params;
+  module.exports.query = this.query;
+
+  var r = yield movie.kinopoisk(true);
+
+  module.exports.params = {
+    id: r.sID
+  };
+
+  this.body = yield module.exports.addMovie();
+};
+
 module.exports.addMovie = function* addMovie() {
   var profile = yield getProfile(this.user.username);
 
@@ -93,15 +119,19 @@ module.exports.addMovie = function* addMovie() {
     return;
   }
 
+  var date = null;
+  if (this.query.date != null) {
+    date = new Date(this.query.date);
+  }
+
   var data = {
-    userId: profile._id,
-    movieId: movie._id,
-    date: null,
+    user: profile._id,
+    movie: movie._id,
+    date: date,
     view: false
   };
 
   var UserMovie = mongoose.model('UserMovie');
-
   this.body = yield new UserMovie(data).save()
     .then(function() {
       return {
@@ -114,7 +144,7 @@ module.exports.addMovie = function* addMovie() {
         'result': 'error'
       };
     });
-  yield {};
+    return this.body;
 };
 
 // Remove user movie
@@ -124,7 +154,7 @@ module.exports.deleteMovie = function* deleteMovie() {
   var UserMovie = mongoose.model('UserMovie');
   this.body = yield UserMovie.findOne({
       'sID': this.params.id,
-      'userId': profile._id
+      'user': profile._id
     }).remove()
     .then(function() {
       return {

@@ -10,6 +10,10 @@ module.exports = function() {
       type: String,
       unique: true
     },
+    displayName: {
+      type: String,
+      unique: true
+    },
     password: String,
     email: {
       type: String,
@@ -17,7 +21,7 @@ module.exports = function() {
     },
     sex: {
       type: Number,
-      default: 0
+      default: 0 // 0 - women, 1 - man, -1 - noman
     },
     roles: {
       type: String,

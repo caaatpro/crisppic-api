@@ -122,13 +122,15 @@ router.get('/user/profile/movies', convert(user.movies));
 router.get('/user/:username/movies', convert(user.movies));
 
 router.put('/user/movie/:id', convert(user.addMovie));
+router.put('/user/movie/kinopoisk/:id', convert(user.addMovieKinopoisk));
 router.delete('/user/movie/:id', convert(user.deleteMovie));
 
 // Movies
 router.get('/movies', convert(movie.list));
+router.get('/movie/:id', convert(movie.movie));
 
 // Parser
-router.get('/movie/kinopoisk/:id', convert(movie.kinopoisk));
+router.put('/movie/kinopoisk/:id', convert(movie.kinopoisk));
 
 app.use(route.get('/people', convert(people.list)));
 

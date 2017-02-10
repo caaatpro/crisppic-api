@@ -1,7 +1,7 @@
 'use strict';
-const parse = require('co-body');
-const mongoose = require('mongoose');
-const kp = require('../parser/kinopoisk.js');
+const parse = require('co-body'),
+mongoose = require('mongoose'),
+kp = require('../parser/kinopoisk.js');
 
 function getMovie(options, limit) {
   var Movie = mongoose.model('Movie');
@@ -33,7 +33,7 @@ function getMovie(options, limit) {
 module.exports.list = function* list() {
   var Movie = mongoose.model('Movie');
 
-  var r = yield Movie.find({}, 'year type poster titles country genre')
+  var r = yield Movie.find({}, 'year type poster titles country genre sID')
     .populate('country')
     .populate('genre')
     .limit(200);
@@ -46,6 +46,7 @@ module.exports.list = function* list() {
       titles[r[i].titles[j].country] = r[i].titles[j].title;
     }
     movies.push({
+      'sID': r[i].sID,
       'titles': titles,
       'year': r[i].year,
       'type': r[i].type,
@@ -56,6 +57,43 @@ module.exports.list = function* list() {
   }
 
   this.body = movies;
+};
+
+module.exports.movie = function* movie() {
+  var temp = this.params.id.match(/\d+/i);
+  if (!temp) {
+    this.status = 404;
+    return;
+  }
+
+  const sID = temp[0];
+
+  var Movie = mongoose.model('Movie');
+
+  var r = yield Movie.findOne({
+      'sID': sID
+    }, 'year type poster titles country genre sID')
+    .populate('country')
+    .populate('genre')
+    .limit(200);
+
+
+
+  var titles = {};
+  for (var j = 0; j < r.titles.length; j++) {
+    titles[r.titles[j].country] = r.titles[j].title;
+  }
+  var movie = {
+    'sID': r.sID,
+    'titles': titles,
+    'year': r.year,
+    'type': r.type,
+    'poster': r.poster,
+    'country': r.country,
+    'genre': r.genre
+  };
+
+  this.body = movie;
 };
 
 module.exports.create = function* create() {
@@ -151,7 +189,8 @@ module.exports.create = function* create() {
   });
 };
 
-module.exports.kinopoisk = function* kinopoisk() {
+module.exports.kinopoisk = function* kinopoisk(u) {
+
   var temp = this.params.id.match(/\d+/i);
   if (!temp) {
     this.status = 404;
@@ -360,11 +399,11 @@ module.exports.kinopoisk = function* kinopoisk() {
 
 
   var titles = {};
-  console.log(movie.titles);
   for (var x = 0; x < movie.titles.length; x++) {
     titles[movie.titles[x].country] = movie.titles[x].title;
   }
   var movieInfo = {
+    'sID': movie.sID,
     'titles': titles,
     'year': movie.year,
     'type': movie.type,
@@ -373,5 +412,13 @@ module.exports.kinopoisk = function* kinopoisk() {
     'genre': movie.genre
   };
 
-  this.body = movieInfo;
+  console.log(1);
+  console.log(u);
+
+  if (u) {
+    console.log(u);
+    return movieInfo;
+  } else {
+    this.body = movieInfo;
+  }
 };
