@@ -94,7 +94,7 @@ app
 // Login
 app.use(route.get('/login', function(ctx) {
   ctx.body = {
-    success: true
+    username: ctx.user.username
   };
 }));
 
@@ -112,18 +112,21 @@ app.use(route.all('/', function(ctx) {
   ctx.body = fs.createReadStream('public/app.html');
 }));
 
-
-// User
-router.get('/user/profile', convert(user.profile));
-router.get('/user/:username', convert(user.profileByName));
+// Users
 router.get('/users', convert(user.users));
 
-router.get('/user/profile/movies', convert(user.movies));
-router.get('/user/:username/movies', convert(user.movies));
+// User
+router.get('/user/:username', convert(user.profileByName));
+router.get('/user/:username/views', convert(user.views));
+router.get('/user/:username/wants', convert(user.wants));
 
-router.put('/user/movie/:id', convert(user.addMovie));
+router.put('/user/views/:id', convert(user.addViews));
+router.put('/user/wants/:id', convert(user.addWants));
+
+router.delete('/user/views/:id', convert(user.removeViews));
+router.delete('/user/wants/:id', convert(user.removeWants));
+
 router.put('/user/movie/kinopoisk/:id', convert(user.addMovieKinopoisk));
-router.delete('/user/movie/:id', convert(user.deleteMovie));
 
 // Movies
 router.get('/movies', convert(movie.list));

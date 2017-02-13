@@ -35,8 +35,7 @@ module.exports.list = function* list() {
 
   var r = yield Movie.find({}, 'year type poster titles country genre sID')
     .populate('country')
-    .populate('genre')
-    .limit(200);
+    .populate('genre');
 
   var movies = [];
 
@@ -74,10 +73,7 @@ module.exports.movie = function* movie() {
       'sID': sID
     }, 'year type poster titles country genre sID')
     .populate('country')
-    .populate('genre')
-    .limit(200);
-
-
+    .populate('genre');
 
   var titles = {};
   for (var j = 0; j < r.titles.length; j++) {
