@@ -140,7 +140,7 @@ module.exports.wants = function* wants() {
 
 
 // add user movie
-module.exports.addMovieKinopoisk = function* addMovieKinopoisk() {
+module.exports.addViewsKinopoisk = function* addViewsKinopoisk() {
   movie.params = this.params;
   module.exports.user = this.user;
   module.exports.params = this.params;
@@ -149,7 +149,24 @@ module.exports.addMovieKinopoisk = function* addMovieKinopoisk() {
   var r = yield movie.kinopoisk(true);
 
   module.exports.params = {
-    id: r.sID
+    id: r.sID,
+    view: true
+  };
+
+  this.body = yield module.exports.addViews();
+};
+// add user movie
+module.exports.addWantsKinopoisk = function* addWantsKinopoisk() {
+  movie.params = this.params;
+  module.exports.user = this.user;
+  module.exports.params = this.params;
+  module.exports.query = this.query;
+
+  var r = yield movie.kinopoisk(true);
+
+  module.exports.params = {
+    id: r.sID,
+    view: false
   };
 
   this.body = yield module.exports.addViews();
@@ -169,6 +186,11 @@ module.exports.addViews = function* addViews() {
     return;
   }
 
+  var view = true;
+  if (typeof(this.params.view) !== 'undefined') {
+    view = this.params.view;
+  }
+
   var date = null;
   if (this.query.date != null) {
     date = new Date(this.query.date);
@@ -178,7 +200,7 @@ module.exports.addViews = function* addViews() {
     user: profile._id,
     movie: movie._id,
     date: date,
-    view: true
+    view: view
   };
 
   var UserMovie = mongoose.model('UserMovie');

@@ -1,6 +1,5 @@
 'use strict';
-const pages = require('./controllers/pages'),
-  people = require('./controllers/people'),
+const people = require('./controllers/people'),
   movie = require('./controllers/movie'),
   user = require('./controllers/user'),
   compress = require('koa-compress'),
@@ -126,8 +125,8 @@ router.put('/user/wants/:id', convert(user.addWants));
 router.delete('/user/views/:id', convert(user.removeViews));
 router.delete('/user/wants/:id', convert(user.removeWants));
 
-router.put('/user/movie/kinopoisk/:id', convert(user.addMovieKinopoisk));
-
+router.put('/user/views/kinopoisk/:id', convert(user.addViewsKinopoisk));
+router.put('/user/wants/kinopoisk/:id', convert(user.addWantsKinopoisk));
 // Movies
 router.get('/movies', convert(movie.list));
 router.get('/movie/:id', convert(movie.movie));
